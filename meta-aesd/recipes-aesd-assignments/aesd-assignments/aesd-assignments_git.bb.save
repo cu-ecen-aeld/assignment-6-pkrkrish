@@ -1,0 +1,41 @@
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+
+# Use HTTPS protocol - it is much more stable for BitBake
+SRC_URI = "git://github.com/cu-ecen-aeld/assignment-6-pkrkrish.git;protocol=https;branch=master"
+
+# PASTE YOUR HASH HERE
+SRCREV = "REPLACE_WITH_THE_HASH_YOU_COPIED"
+
+# Set PV to 1.0 to stop BitBake from trying to fetch a version string during parsing
+PV = "1.0"
+
+S = "${WORKDIR}/git/server"
+
+# Ensure the binary is included in the package
+FILES:${PN} += "${bindir}/aesdsocket"
+
+# Add necessary libraries for socket programming
+TARGET_LDFLAGS += "-pthread -lrt"
+
+do_configure () {
+    :
+}
+
+do_compile () {
+    oe_runmake
+}
+
+do_install () {
+    # 1. Create the destination directory in the root filesystem
+    install -d ${D}${bindir}
+    
+    # 2. Install the aesdsocket binary
+    # ${S} is the source directory, ${D} is the destination (image rootfs)
+    install -m 0755 ${S}/aesdsocket ${D}${bindir}/
+
+    # 3. Optional: If you have an init script for Assignment 6
+    install -d ${D}${sysconfdir}/init.d
+    # Note: adjust the path to S99aesdsocket if it's in a different folder in your repo
+    # install -m 0755 ${S}/S99aesdsocket ${D}${sysconfdir}/init.d/
+}
